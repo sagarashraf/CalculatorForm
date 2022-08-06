@@ -472,7 +472,7 @@ export const Calculator = (props) => {
 		Template.personalInformation.gender = gender;
 		Template.personalInformation.dateBirth = BirthDate;
 		Template.personalInformation.contact = contact;
-		Template.personalInformation.ageAuto = age;
+		Template.personalInformage = age;
 		Template.personalInformation.SSN = SSN;
 		Template.personalInformation.email = email;
 		Template.personalInformation.height = height;
@@ -570,6 +570,8 @@ export const Calculator = (props) => {
 		await FinancialRisk(Template);
 		await InsuranceRating(Template);
 		await MoreDetails(Template);
+		Template.gender = gender;
+		Template.age = age;
 		console.log("===", Template);
 		let response = await axios.post("main/calculations", Template);
 		console.log("=====", response);

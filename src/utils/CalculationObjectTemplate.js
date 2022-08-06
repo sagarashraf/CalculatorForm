@@ -1,6 +1,6 @@
 export const CALCULATION_OBJECT = {
+	age: "",
 	medicalData: {
-		gender: "",
 		hiv: "",
 		checkUp: "",
 		medHistory: "",
@@ -20,7 +20,6 @@ export const CALCULATION_OBJECT = {
 		anxiety: { state: "", level: 0 },
 	},
 	lifeStyle: {
-		gender: "",
 		phyActive: "",
 		phyActivities: "",
 		fruitVeg: "",
@@ -31,7 +30,6 @@ export const CALCULATION_OBJECT = {
 		alchohol: "",
 	},
 	legalRisk: {
-		gender: "",
 		infractions: 0,
 		criminal: "",
 		duidwi: {
@@ -47,7 +45,6 @@ export const CALCULATION_OBJECT = {
 		creditrating: "",
 	},
 	insurance: {
-		gender: "",
 		lifeCoverage: "",
 		decline: "",
 	},
