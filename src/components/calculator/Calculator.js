@@ -26,6 +26,7 @@ import { CALCULATION_OBJECT } from "../../utils/CalculationObjectTemplate";
 import { BMI } from "../../utils/BMI";
 import { UnhedgeEndDate } from "../../utils/UnhedgeEndDate";
 import { HedgeEndDate } from "../../utils/HedgeEndDate";
+import axios from "axios";
 
 /**
  * @author
@@ -54,6 +55,7 @@ export const Calculator = (props) => {
 	const [WeightBMI, setWeightBMI] = useState("");
 	const [insuranceCompany, setInsuranceCompany] = useState("");
 	const [insuranceCompanyRating, setInsuranceCompanyRating] = useState("");
+	const [companiesListing, setCompaniesListing] = useState([]);
 
 	///Financial Hooks //////
 	const [startDate, setstartDate] = useState("");
@@ -219,7 +221,7 @@ export const Calculator = (props) => {
 		var obj = JSON.parse(data);
 		setInsuranceCompany(obj);
 		console.log(insuranceCompany);
-		setInsuranceCompanyRating(obj.Rating);
+		setInsuranceCompanyRating(obj.rating);
 	};
 	//==== Finncial Handler=====//
 	const bankCoruptHandler = (data) => {
@@ -569,7 +571,23 @@ export const Calculator = (props) => {
 		await InsuranceRating(Template);
 		await MoreDetails(Template);
 		console.log("===", Template);
+		let response = await axios.post("main/calculations", Template);
+		console.log("=====", response);
 	};
+	const test = async () => {
+		let response = await axios.post("bc/ins_rating", {
+			gender: "male",
+			age: 30,
+		});
+	};
+	useEffect(() => {
+		async function fetchData() {
+			let companies = await axios.get("bd/ins_company_names");
+			console.log("axios companies", companies.data);
+			setCompaniesListing(companies.data);
+		}
+		fetchData();
+	}, []); // Only re-run the effect if count changes
 
 	return (
 		<Container className='mt-3'>
@@ -776,10 +794,10 @@ export const Calculator = (props) => {
 						<Form.Select
 							onChange={(e) => InsuranceHandler(e.target.value)}
 							aria-label='Default select example'>
-							{credit_rating_master.map((item, index) => {
+							{companiesListing.map((item, index) => {
 								return (
 									<option key={`${index}weight`} value={JSON.stringify(item)}>
-										{item.companyName}
+										{item.company_name}
 									</option>
 								);
 							})}
