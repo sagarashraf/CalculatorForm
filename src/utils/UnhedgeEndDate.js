@@ -10,7 +10,7 @@ export const UnhedgeEndDate = (userAge) => {
 	var total = diffDays + cutoff + no_of_days;
 	let pmntEndDate = new Date(
 		old_date.getTime() + parseInt(total) * 24 * 60 * 60 * 1000 + three_months
-	).toDateString();
+	);
 
 	return pmntEndDate;
 };

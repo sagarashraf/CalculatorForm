@@ -35,10 +35,10 @@ import axios from "axios";
 
 export const Calculator = (props) => {
 	//======== Personal Information ==========/////
-	const [date, setDate] = useState(new Date());
+	const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [paymentType, setPaymentType] = useState("");
+	const [paymentType, setPaymentType] = useState(1);
 	const [city, setCity] = useState("");
 	const [state, setState] = useState("");
 	const [zip, setZip] = useState("");
@@ -61,11 +61,11 @@ export const Calculator = (props) => {
 	const [startDate, setstartDate] = useState("");
 	const [endDate, setendDate] = useState("");
 	const [calculatedendDatehedge, setcalculatedendDatehedge] = useState("");
-	const [calculatedendDateunhedge, setu] = useState("");
+	const [calculatedendDateunhedge, setculatedendDateunhedge] = useState("");
 	const [paymentAmount, setpaymentAmount] = useState("");
 	const [atPercent, setatPercent] = useState(100);
 	const [paymentatHundredpercent, setpaymentatHundredpercent] = useState("");
-	const [paymentMode, setpaymentMode] = useState("");
+	const [paymentMode, setpaymentMode] = useState("Monthly");
 	const [annualIncrease, setannualIncrease] = useState(0);
 
 	///Financial Hooks //////
@@ -196,8 +196,10 @@ export const Calculator = (props) => {
 		let ageFromString = new AgeFromDateString(e.target.value).age;
 		setBirthDate(e.target.value);
 		setAge(ageFromString);
-		console.log("=========", await UnhedgeEndDate(ageFromString));
-		console.log("===+++====", await HedgeEndDate(30));
+		let unhedgeDate = await UnhedgeEndDate(ageFromString);
+		let hedgeDate = await HedgeEndDate(ageFromString);
+		setcalculatedendDatehedge(hedgeDate.toISOString().substr(0, 10));
+		setculatedendDateunhedge(unhedgeDate.toISOString().substr(0, 10));
 	};
 
 	///======= BMI setshow
@@ -519,7 +521,7 @@ export const Calculator = (props) => {
 		Template.medicalData.heartIssue.state = await MakeLowerCase(heart);
 		Template.medicalData.heartIssue.level = heartlevel;
 	};
-	const PaymentInfo = async (Template) => {
+	const PaymentInfomation = (Template) => {
 		Template.paymentInfo.startDate = startDate;
 		Template.paymentInfo.endDate = endDate;
 		Template.paymentInfo.calEndDateHedge = calculatedendDatehedge;
@@ -566,7 +568,7 @@ export const Calculator = (props) => {
 		let Template = CALCULATION_OBJECT;
 		await PersonalInfo(Template);
 		await MedicalProfile(Template);
-		await PaymentInfo(Template);
+		await PaymentInfomation(Template);
 		await LifeStyle(Template);
 		await LegalRisk(Template);
 		await FinancialRisk(Template);
@@ -859,14 +861,14 @@ export const Calculator = (props) => {
 						<Form.Label className='fw-bolder'>
 							Calculated End Date (Auto Generated: Hedge)
 						</Form.Label>
-						<Form.Control value={calculatedendDatehedge} type='date' />
+						<Form.Control value={calculatedendDatehedge} type='text' />
 					</Form.Group>
 
 					<Form.Group as={Col} sm={6} xs={12} controlId='formGridPassword'>
 						<Form.Label className='fw-bolder'>
 							Calculated End Date (Auto Generated: unhedge)
 						</Form.Label>
-						<Form.Control value={calculatedendDateunhedge} type='date' />
+						<Form.Control value={calculatedendDateunhedge} type='text' />
 					</Form.Group>
 				</Row>
 				<Row className='mb-3'>

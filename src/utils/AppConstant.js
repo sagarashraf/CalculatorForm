@@ -381,7 +381,7 @@ export const credit_rating_master = [
 	},
 ];
 
-export const PERCENTAGE_STEP_UP = Array.from({ length: 10 }, (v, k) => k + 1);
+export const PERCENTAGE_STEP_UP = Array.from({ length: 10 }, (v, k) => k);
 export const PAYMENT_MODE = [
 	"Monthly",
 	"Quarterly",
