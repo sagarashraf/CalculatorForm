@@ -44,13 +44,13 @@ export const Calculator = (props) => {
 	const [zip, setZip] = useState("");
 	const [gender, setGender] = useState("Male");
 	const [BirthDate, setBirthDate] = useState("");
-	const [age, setAge] = useState("");
+	const [age, setAge] = useState(27);
 	const [contact, setContact] = useState("");
 	const [SSN, setSSN] = useState("");
 	const [email, setEmail] = useState("");
 	const [height, setHeight] = useState(5.7);
 
-	const [Weight, setWeight] = useState(70);
+	const [Weight, setWeight] = useState(120);
 	const [disableWeight, setdisableWeight] = useState(true);
 	const [WeightBMI, setWeightBMI] = useState("");
 	const [insuranceCompany, setInsuranceCompany] = useState("");
@@ -66,7 +66,7 @@ export const Calculator = (props) => {
 	const [atPercent, setatPercent] = useState(100);
 	const [paymentatHundredpercent, setpaymentatHundredpercent] = useState("");
 	const [paymentMode, setpaymentMode] = useState("");
-	const [annualIncrease, setannualIncrease] = useState("");
+	const [annualIncrease, setannualIncrease] = useState(0);
 
 	///Financial Hooks //////
 
@@ -86,7 +86,7 @@ export const Calculator = (props) => {
 	const [medicalHis, setMedicalHistory] = useState("Yes");
 	//---------Medical History---------//
 	//---------bp---------//
-	const [bp, setBP] = useState("No");
+	const [bp, setBP] = useState("Normal");
 	const [bplevel, setBPlevel] = useState(0);
 	const [showBP, setshowBP] = useState(false);
 	//---------bp---------//
@@ -101,7 +101,7 @@ export const Calculator = (props) => {
 	//---------Asthma------//
 	//---------Diabetes------//
 	const [diabetes, setDiabetes] = useState("No");
-	const [diabeteslevel, setDiabeteslevel] = useState(0);
+	const [diabeteslevel, setDiabeteslevel] = useState("Type-1");
 	const [showdiabeteslevel, setShowDiabeteslevel] = useState(false);
 
 	//---------Diabetes------//
@@ -155,15 +155,15 @@ export const Calculator = (props) => {
 	const [physicallyActive, setphysicallyActive] = useState("Yes");
 	const [physicalActivities, setphysicalActivities] = useState("No Exercise");
 	const [vegies, setVegies] = useState("No");
-	const [vegiesIntake, setvegiesIntake] = useState("No");
+	const [vegiesIntake, setvegiesIntake] = useState("No VEGIES");
 	const [disabilities, setDisabilities] = useState("No");
 	const [tabacco, setTabacco] = useState("No");
-	const [alchohol, setAlchohol] = useState("No");
+	const [alchohol, setAlchohol] = useState("i do not drink");
 	const [drugs, setDrugs] = useState("No");
 	///======= lifestyle hooks=====///
 	///======= legal history hooks=====///
-	const [infractions, setInfractions] = useState("0 Driving Infractions");
-	const [criminalCharges, setCriminalCharges] = useState("No Exercise");
+	const [infractions, setInfractions] = useState(0);
+	const [criminalCharges, setCriminalCharges] = useState("No");
 	const [DUI, setDUI] = useState("No");
 	const [showDUI, setshowDUI] = useState(false);
 	const [DUIllevel, setDUIlevel] = useState(0);
@@ -174,7 +174,7 @@ export const Calculator = (props) => {
 	const [bankcrupt, setbankcrupt] = useState("No");
 	const [showbankcruptlevel, setshowbankcruptlevel] = useState(false);
 	const [bankcruptllevel, setbankcruptlevel] = useState(0);
-	const [creditRating, setcreditRating] = useState("Poor (300-549)");
+	const [creditRating, setcreditRating] = useState("poor 300-549");
 	///======= financial hooks=====///
 	///======= Insurance hooks=====///
 	const [insuranceCoverage, setInsuranceCoverage] = useState("No");
@@ -282,14 +282,14 @@ export const Calculator = (props) => {
 	//=======bp========//
 	const BpHandler = (data) => {
 		var select = data.target.value;
-		if (select == "Yes") {
-			setBP(select);
-			setshowBP(true);
-			setBPlevel(1);
-		} else if (select == "No") {
+		if (select == "Normal" || select == "Not Sure") {
 			setshowBP(false);
 			setBP(select);
 			setBPlevel(0);
+		} else {
+			setBP(select);
+			setshowBP(true);
+			setBPlevel(1);
 		}
 	};
 
@@ -467,9 +467,9 @@ export const Calculator = (props) => {
 		Template.personalInformation.date = date;
 		Template.personalInformation.firstName = firstName;
 		Template.personalInformation.lastName = lastName;
-		Template.personalInformation.paymentType = paymentType;
+		Template.personalInformation.paymentType = +paymentType;
 		Template.personalInformation.address = `${city}  ${state} ${zip}`;
-		Template.personalInformation.gender = gender;
+		Template.personalInformation.gender = await MakeLowerCase(gender);
 		Template.personalInformation.dateBirth = BirthDate;
 		Template.personalInformation.contact = contact;
 		Template.personalInformage = age;
@@ -484,37 +484,39 @@ export const Calculator = (props) => {
 	};
 	const MedicalProfile = async (Template) => {
 		Template.medicalData.hiv = hiv;
-		Template.medicalData.cancer.state = cancer;
+		Template.medicalData.cancer.state = await MakeLowerCase(cancer);
 		Template.medicalData.cancer.level = cancerlevel;
-		Template.medicalData.checkUp = anualcheckup;
-		Template.medicalData.medHistory = medicalHis;
-		Template.medicalData.hypertension.state = bp;
+		Template.medicalData.checkUp = await MakeLowerCase(anualcheckup);
+		Template.medicalData.medHistory = await MakeLowerCase(medicalHis);
+		Template.medicalData.hypertension.state = await MakeLowerCase(bp);
 		Template.medicalData.hypertension.level = bplevel;
-		Template.medicalData.cholesterol.state = cholestoral;
+		Template.medicalData.cholesterol.state = await MakeLowerCase(cholestoral);
 		Template.medicalData.cholesterol.level = cholestorallevel;
-		Template.medicalData.asthma.state = asthma;
+		Template.medicalData.asthma.state = await MakeLowerCase(asthma);
 		Template.medicalData.asthma.level = asthmalevel;
-		Template.medicalData.diabetes.state = diabetes;
-		Template.medicalData.diabetes.level = diabeteslevel;
-		Template.medicalData.diabetes.state = diabetes;
-		Template.medicalData.diabetes.level = diabeteslevel;
-		Template.medicalData.liver.state = liver;
+		Template.medicalData.diabetes.state = await MakeLowerCase(diabetes);
+		Template.medicalData.diabetes.level = await MakeLowerCase(diabeteslevel);
+		Template.medicalData.diabetes.state = await MakeLowerCase(diabetes);
+		Template.medicalData.diabetes.level = await MakeLowerCase(diabeteslevel);
+		Template.medicalData.liver.state = await MakeLowerCase(liver);
 		Template.medicalData.liver.level = liverlevel;
-		Template.medicalData.kidney.state = kidney;
+		Template.medicalData.kidney.state = await MakeLowerCase(kidney);
 		Template.medicalData.kidney.level = kidneylevel;
-		Template.medicalData.apnea.state = apnea;
+		Template.medicalData.apnea.state = await MakeLowerCase(apnea);
 		Template.medicalData.apnea.level = apnealevel;
-		Template.medicalData.bipolar.state = bipolar;
+		Template.medicalData.bipolar.state = await MakeLowerCase(bipolar);
 		Template.medicalData.bipolar.level = bipolarlevel;
-		Template.medicalData.neuroDisorder.state = neurological;
+		Template.medicalData.neuroDisorder.state = await MakeLowerCase(
+			neurological
+		);
 		Template.medicalData.neuroDisorder.level = neurologicallevel;
-		Template.medicalData.psychiatric.state = psychiatric;
+		Template.medicalData.psychiatric.state = await MakeLowerCase(psychiatric);
 		Template.medicalData.psychiatric.level = psychiatriclevel;
-		Template.medicalData.anxiety.state = anxiety;
+		Template.medicalData.anxiety.state = await MakeLowerCase(anxiety);
 		Template.medicalData.anxiety.level = anxietylevel;
-		Template.medicalData.angiography.state = Angio;
+		Template.medicalData.angiography.state = await MakeLowerCase(Angio);
 		Template.medicalData.angiography.level = Angiolevel;
-		Template.medicalData.heartIssue.state = heart;
+		Template.medicalData.heartIssue.state = await MakeLowerCase(heart);
 		Template.medicalData.heartIssue.level = heartlevel;
 	};
 	const PaymentInfo = async (Template) => {
@@ -529,34 +531,34 @@ export const Calculator = (props) => {
 		Template.paymentInfo.annualIncrese = annualIncrease;
 	};
 	const LifeStyle = async (Template) => {
-		Template.lifeStyle.phyActive = physicallyActive;
-		Template.lifeStyle.phyActivities = physicalActivities;
-		Template.lifeStyle.fruitVeg = vegies;
-		Template.lifeStyle.fruitvegportion = vegiesIntake;
-		Template.lifeStyle.disabilities = disabilities;
-		Template.lifeStyle.tobacco = tabacco;
-		Template.lifeStyle.drugabuse = drugs;
-		Template.lifeStyle.alchohol = alchohol;
+		Template.lifeStyle.phyActive = await MakeLowerCase(physicallyActive);
+		Template.lifeStyle.phyActivities = await MakeLowerCase(physicalActivities);
+		Template.lifeStyle.fruitVeg = await MakeLowerCase(vegies);
+		Template.lifeStyle.fruitvegportion = await MakeLowerCase(vegiesIntake);
+		Template.lifeStyle.disabilities = await MakeLowerCase(disabilities);
+		Template.lifeStyle.tobacco = await MakeLowerCase(tabacco);
+		Template.lifeStyle.drugabuse = await MakeLowerCase(drugs);
+		Template.lifeStyle.alchohol = await MakeLowerCase(alchohol);
 	};
 	const LegalRisk = async (Template) => {
 		Template.legalRisk.infractions = infractions;
-		Template.legalRisk.criminal = criminalCharges;
-		Template.legalRisk.duidwi.state = DUI;
+		Template.legalRisk.criminal = await MakeLowerCase(criminalCharges);
+		Template.legalRisk.duidwi.state = await MakeLowerCase(DUI);
 		Template.legalRisk.duidwi.level = DUIllevel;
 	};
 	const FinancialRisk = async (Template) => {
-		Template.financialRisk.creditrating = creditRating;
-		Template.financialRisk.bankcrupt.state = bankcrupt;
+		Template.financialRisk.creditrating = await MakeLowerCase(creditRating);
+		Template.financialRisk.bankcrupt.state = await MakeLowerCase(bankcrupt);
 		Template.financialRisk.bankcrupt.level = bankcruptllevel;
 	};
 	const InsuranceRating = async (Template) => {
-		Template.insurance.lifeCoverage = insuranceCoverage;
-		Template.insurance.decline = declinedCoverage;
+		Template.insurance.lifeCoverage = await MakeLowerCase(insuranceCoverage);
+		Template.insurance.decline = await MakeLowerCase(declinedCoverage);
 	};
 
 	const MoreDetails = async (Template) => {
-		Template.moreDetails.merriage = merriage;
-		Template.moreDetails.childSupport.state = childSupport;
+		Template.moreDetails.merriage = await MakeLowerCase(merriage);
+		Template.moreDetails.childSupport.state = await MakeLowerCase(childSupport);
 		Template.moreDetails.childSupport.level = childSupportAmount;
 	};
 
@@ -570,7 +572,7 @@ export const Calculator = (props) => {
 		await FinancialRisk(Template);
 		await InsuranceRating(Template);
 		await MoreDetails(Template);
-		Template.gender = gender;
+		Template.gender = await MakeLowerCase(gender);
 		Template.age = age;
 		console.log("===", Template);
 		let response = await axios.post("main/calculations", Template);
@@ -644,13 +646,22 @@ export const Calculator = (props) => {
 
 							<option value='1'>Life Contingent Payment (LCP)</option>
 							<option value='2'>Guranteed Payments (GP)</option>
-							<option value='0'>I Don’t Know</option>
+							{/* <option value='0'>I Don’t Know</option> */}
 						</Form.Select>
 					</Form.Group>
 				</Row>
 				<Row className='mb-3'>
 					<Form.Label className='fw-bolder'>Address</Form.Label>
-					<Form.Group as={Col} sm={4} xs={12} controlId='formGridCity'>
+					<Form.Group as={Col} sm={3} xs={12} controlId='formGridCity'>
+						<Form.Label className='fw-bolder'>Street Address</Form.Label>
+						<Form.Control
+							value={city}
+							onChange={(e) => setCity(e.target.value)}
+							type='text'
+							placeholder='Los Angeles'
+						/>
+					</Form.Group>
+					<Form.Group as={Col} sm={3} xs={12} controlId='formGridCity'>
 						<Form.Label className='fw-bolder'>City</Form.Label>
 						<Form.Control
 							value={city}
@@ -660,7 +671,7 @@ export const Calculator = (props) => {
 						/>
 					</Form.Group>
 
-					<Form.Group as={Col} sm={4} xs={6} controlId='formGridState'>
+					<Form.Group as={Col} sm={3} xs={6} controlId='formGridState'>
 						<Form.Label className='fw-bolder'>State</Form.Label>
 						<Form.Control
 							value={state}
@@ -670,7 +681,7 @@ export const Calculator = (props) => {
 						/>
 					</Form.Group>
 
-					<Form.Group as={Col} sm={4} xs={6} controlId='formGridZip'>
+					<Form.Group as={Col} sm={3} xs={6} controlId='formGridZip'>
 						<Form.Label className='fw-bolder'>Zip</Form.Label>
 						<Form.Control
 							value={zip}
@@ -725,7 +736,9 @@ export const Calculator = (props) => {
 				</Row>
 				<Row className='mb-3'>
 					<Form.Group as={Col} sm={6} xs={12} controlId='formGridEmail'>
-						<Form.Label className='fw-bolder'>Social Security (SSN)</Form.Label>
+						<Form.Label className='fw-bolder'>
+							Social Security (SSN) -Last 4 Digits
+						</Form.Label>
 						<Form.Control
 							value={SSN}
 							onChange={(e) => setSSN(e.target.value)}
@@ -1057,7 +1070,7 @@ export const Calculator = (props) => {
 							<option selected disabled>
 								Select an Option
 							</option>
-							{YES_NO.map((item, index) => {
+							{HEALTH_CONDITION.map((item, index) => {
 								return (
 									<option key={`${index}HISTORY`} value={item}>
 										{item}
@@ -1806,8 +1819,8 @@ export const Calculator = (props) => {
 							</option>
 							{INFRACTIONS.map((item, index) => {
 								return (
-									<option key={`${index}DIS`} value={item}>
-										{item}
+									<option key={`${index}DIS`} value={item.value}>
+										{item.lable}
 									</option>
 								);
 							})}
@@ -1915,7 +1928,7 @@ export const Calculator = (props) => {
 									<option selected disabled>
 										Select an Option
 									</option>
-									{BANK_CUR.map((item, index) => {
+									{NUMBER_LIST.map((item, index) => {
 										return (
 											<option key={`${index}BCt`} value={item}>
 												{item}
