@@ -27,6 +27,7 @@ import { BMI } from "../../utils/BMI";
 import { UnhedgeEndDate } from "../../utils/UnhedgeEndDate";
 import { HedgeEndDate } from "../../utils/HedgeEndDate";
 import axios from "axios";
+import { MessageModal } from "./MessageModal";
 
 /**
  * @author
@@ -35,16 +36,19 @@ import axios from "axios";
 
 export const Calculator = (props) => {
 	//======== Personal Information ==========/////
+	const [modalshow, setModalShow] = useState(false);
+	const [error, setError] = useState("");
 	const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [paymentType, setPaymentType] = useState(1);
+	const [streetAdress, setStreetAdress] = useState("");
 	const [city, setCity] = useState("");
 	const [state, setState] = useState("");
 	const [zip, setZip] = useState("");
 	const [gender, setGender] = useState("Male");
 	const [BirthDate, setBirthDate] = useState("");
-	const [age, setAge] = useState(27);
+	const [age, setAge] = useState(0);
 	const [contact, setContact] = useState("");
 	const [SSN, setSSN] = useState("");
 	const [email, setEmail] = useState("");
@@ -52,9 +56,9 @@ export const Calculator = (props) => {
 
 	const [Weight, setWeight] = useState(120);
 	const [disableWeight, setdisableWeight] = useState(true);
-	const [WeightBMI, setWeightBMI] = useState("");
+	const [WeightBMI, setWeightBMI] = useState(BMI(gender, height, Weight));
 	const [insuranceCompany, setInsuranceCompany] = useState("");
-	const [insuranceCompanyRating, setInsuranceCompanyRating] = useState("");
+	const [insuranceCompanyRating, setInsuranceCompanyRating] = useState("A");
 	const [companiesListing, setCompaniesListing] = useState([]);
 
 	///Financial Hooks //////
@@ -62,7 +66,7 @@ export const Calculator = (props) => {
 	const [endDate, setendDate] = useState("");
 	const [calculatedendDatehedge, setcalculatedendDatehedge] = useState("");
 	const [calculatedendDateunhedge, setculatedendDateunhedge] = useState("");
-	const [paymentAmount, setpaymentAmount] = useState("");
+	const [paymentAmount, setpaymentAmount] = useState(0);
 	const [atPercent, setatPercent] = useState(100);
 	const [paymentatHundredpercent, setpaymentatHundredpercent] = useState("");
 	const [paymentMode, setpaymentMode] = useState("Monthly");
@@ -470,7 +474,7 @@ export const Calculator = (props) => {
 		Template.personalInformation.firstName = firstName;
 		Template.personalInformation.lastName = lastName;
 		Template.personalInformation.paymentType = +paymentType;
-		Template.personalInformation.address = `${city}  ${state} ${zip}`;
+		Template.personalInformation.address = `${streetAdress} ${city}  ${state} ${zip}`;
 		Template.personalInformation.gender = await MakeLowerCase(gender);
 		Template.personalInformation.dateBirth = BirthDate;
 		Template.personalInformation.contact = contact;
@@ -565,27 +569,37 @@ export const Calculator = (props) => {
 	};
 
 	const onSubmit = async () => {
-		let Template = CALCULATION_OBJECT;
-		await PersonalInfo(Template);
-		await MedicalProfile(Template);
-		await PaymentInfomation(Template);
-		await LifeStyle(Template);
-		await LegalRisk(Template);
-		await FinancialRisk(Template);
-		await InsuranceRating(Template);
-		await MoreDetails(Template);
-		Template.gender = await MakeLowerCase(gender);
-		Template.age = age;
-		console.log("===", Template);
-		let response = await axios.post("main/calculations", Template);
-		console.log("=====", response);
+		if (age === 0) {
+			setError("Please Select Date of Birth");
+			setModalShow(true);
+		} else if (startDate.length === 0) {
+			setError("Please Add Start Date of the Payment");
+			setModalShow(true);
+		} else if (endDate.length === 0) {
+			setError("Please Add End Date of the Payment");
+			setModalShow(true);
+		} else if (paymentAmount === 0) {
+			setError("Please Add Amount");
+			setModalShow(true);
+		} else {
+			setModalShow(false);
+			let Template = CALCULATION_OBJECT;
+			await PersonalInfo(Template);
+			await MedicalProfile(Template);
+			await PaymentInfomation(Template);
+			await LifeStyle(Template);
+			await LegalRisk(Template);
+			await FinancialRisk(Template);
+			await InsuranceRating(Template);
+			await MoreDetails(Template);
+			Template.gender = await MakeLowerCase(gender);
+			Template.age = age;
+			console.log("===", Template);
+			let response = await axios.post("main/calculations", Template);
+			console.log("=====", response);
+		}
 	};
-	const test = async () => {
-		let response = await axios.post("bc/ins_rating", {
-			gender: "male",
-			age: 30,
-		});
-	};
+
 	useEffect(() => {
 		async function fetchData() {
 			let companies = await axios.get("bd/ins_company_names");
@@ -596,14 +610,17 @@ export const Calculator = (props) => {
 	}, []); // Only re-run the effect if count changes
 
 	return (
-		<Container className='mt-3'>
-			<Button onClick={() => onSubmit()}>submit</Button>
+		<Container className='my-3'>
+			<MessageModal
+				message={error}
+				show={modalshow}
+				onHide={() => setModalShow(false)}
+			/>
 			<Row>
 				<Alert className='text-center' variant='success'>
 					<h3>Personal Information </h3>
 				</Alert>
 			</Row>
-
 			<Form>
 				<Row className='mb-3'>
 					<Form.Group as={Col} sm={6} xs={12} controlId='formGridEmail'>
@@ -653,14 +670,13 @@ export const Calculator = (props) => {
 					</Form.Group>
 				</Row>
 				<Row className='mb-3'>
-					<Form.Label className='fw-bolder'>Address</Form.Label>
 					<Form.Group as={Col} sm={3} xs={12} controlId='formGridCity'>
 						<Form.Label className='fw-bolder'>Street Address</Form.Label>
 						<Form.Control
-							value={city}
-							onChange={(e) => setCity(e.target.value)}
+							value={streetAdress}
+							onChange={(e) => setStreetAdress(e.target.value)}
 							type='text'
-							placeholder='Los Angeles'
+							placeholder='LF4'
 						/>
 					</Form.Group>
 					<Form.Group as={Col} sm={3} xs={12} controlId='formGridCity'>
@@ -1007,8 +1023,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1094,8 +1110,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1137,8 +1153,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1181,8 +1197,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1266,8 +1282,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1309,8 +1325,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1353,8 +1369,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1396,8 +1412,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1440,8 +1456,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1483,8 +1499,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1528,8 +1544,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1571,8 +1587,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1615,8 +1631,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -1885,8 +1901,8 @@ export const Calculator = (props) => {
 									</option>
 									{NUMBER_LIST.map((item, index) => {
 										return (
-											<option key={`${index}`} value={item}>
-												{item}
+											<option key={`${index}`} value={item.value}>
+												{item.label}
 											</option>
 										);
 									})}
@@ -2072,6 +2088,11 @@ export const Calculator = (props) => {
 					</Form.Group>
 				</Row>
 			</Form>
+			<div className='text-center pb-5'>
+				<Button variant='success' className='w-25 ' onClick={() => onSubmit()}>
+					Submit
+				</Button>
+			</div>
 		</Container>
 	);
 };

@@ -1,4 +1,9 @@
-export const NUMBER_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+export const NUMBER_LIST = [
+	{ label: "1-2", value: 2 },
+	{ label: "3-5", value: 5 },
+	{ label: "6-9", value: 9 },
+	{ label: "10+", value: 10 },
+];
 export const HEALTH_CONDITION = ["Normal", "Medicated", "High", "Not Sure"];
 export const YES_NO = ["No", "Yes"];
 export const EXERCISE = [
