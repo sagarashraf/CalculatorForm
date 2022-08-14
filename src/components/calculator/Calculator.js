@@ -827,7 +827,7 @@ export const Calculator = (props) => {
 						<Form.Select
 							onChange={(e) => InsuranceHandler(e.target.value)}
 							aria-label='Default select example'>
-							{companiesListing.map((item, index) => {
+							{companiesListing?.map((item, index) => {
 								return (
 									<option key={`${index}weight`} value={JSON.stringify(item)}>
 										{item.company_name}
