@@ -604,7 +604,7 @@ export const Calculator = (props) => {
 		async function fetchData() {
 			let companies = await axios.get("bd/ins_company_names");
 			console.log("axios companies", companies.data);
-			setCompaniesListing(companies.data);
+			setCompaniesListing(companies.data ? companies.data : []);
 		}
 		fetchData();
 	}, []); // Only re-run the effect if count changes
@@ -2090,7 +2090,7 @@ export const Calculator = (props) => {
 			</Form>
 			<div className='text-center pb-5'>
 				<Button variant='success' className='w-25 ' onClick={() => onSubmit()}>
-					Submit
+					<b> Submit</b>
 				</Button>
 			</div>
 		</Container>
